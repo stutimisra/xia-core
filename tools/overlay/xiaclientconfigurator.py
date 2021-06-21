@@ -22,6 +22,7 @@ mobility_time = 5
 class XIAClientConfigReader:
     def __init__(self, config_filename):
        self.routers = {}
+       self.routers_port = {}
        self.default_router = {}
        self.control_addr = {}
        self.control_port = {}
@@ -50,6 +51,8 @@ class XIAClientConfigReader:
            routers = routers.replace(' ', '')
            router_list = routers.split(',')
            self.routers[client] = router_list
+           self.routers_port[client] = parser.get(client, 'RoutersPort')
+           print("RoutersPort: " + self.routers_port[client])
 
            iface = parser.get(client, 'Interfaces')
            iface = iface.replace(' ', '')
@@ -112,7 +115,8 @@ class ConfigClient(Int32StringReceiver):
         response.name = self.client
         response.ipaddr = self.clientConfigurator.clientConfig.router_addr[router]
         response.iface = self.clientConfigurator.clientConfig.router_iface[self.client][router]
-        response.port = "8770"
+        response.port = self.clientConfigurator.clientConfig.routers_port[self.client]
+        print "Response.port: " + response.port
         response.AID = self.clientConfigurator.clientConfig.aid[self.client]
         response.AD = self.clientConfigurator.clientConfig.ad[router]
         response.HID =self.clientConfigurator.clientConfig.hid[router]
