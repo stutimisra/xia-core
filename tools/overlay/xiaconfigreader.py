@@ -15,7 +15,8 @@ class XIAConfigReader:
         self.link_info = {}
         self.port = {}
         self.next_port = {}
-         
+        self.route_port = {}
+
         # Read in the config file
         parser = RawConfigParser()
         parser.read(config_filename)
@@ -45,6 +46,9 @@ class XIAConfigReader:
 
             # NextPort
             self.next_port[router] = parser.get(router, 'NextPort')
+
+            # RoutePort
+            self.route_port[router] = parser.get(router, 'RoutePort')
 
             # Check if this is a nameserver
             try:

@@ -42,4 +42,4 @@ getxid $1 "AD"
 AD=$XID
 getxid $1 "HID"
 HID=$XID
-[ "$HID" != "" -a "$AD" != "" ] && echo "$(hostname -s) RE $AD $HID"
+[ "$HID" != "" -a "$AD" != "" ] && echo "$1 RE $AD $HID"
