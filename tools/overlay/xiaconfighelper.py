@@ -27,6 +27,10 @@ import interfaces
 
 picoquic_directory = "../picoquic"
 
+if (len(sys.argv) >= 2):
+    router_name = str(sys.argv[1])
+    print("router_name: " + router_name)
+
 class Helper(Int32StringReceiver):
     def __init__(self, common_data, addr):
         self.common_data = common_data
@@ -135,7 +139,9 @@ class Helper(Int32StringReceiver):
         self.sendString(request.SerializeToString())
 
     def handleGatherXIDsRequest(self, request):
-        xdag_cmd = os.path.join(xiapyutils.xia_srcdir(), 'bin/xdag')
+        xdag_cmd = os.path.join(xiapyutils.xia_srcdir(), 'bin/xdag ')
+        xdag_cmd = xdag_cmd + " " + router_name
+        print(xdag_cmd)
         xdag_out = subprocess.check_output(xdag_cmd, shell=True)
         router, re, ad, hid = xdag_out.split()
         request.gatherxids.ad = ad
@@ -143,6 +149,7 @@ class Helper(Int32StringReceiver):
         self.sendString(request.SerializeToString())
 
     def handleConfigRequest(self, request):
+        print("I'm handling config requests")
         if request.type == configrequest_pb2.Request.IFACE_INFO:
             self.handleInterfaceRequest(request)
         elif request.type == configrequest_pb2.Request.ROUTER_CONF:

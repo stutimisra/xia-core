@@ -184,15 +184,17 @@ class ConfigRouter(Int32StringReceiver):
 
             # Their IP addr (from configurator.iface_addrs
             ipaddr = self.configurator.iface_addrs[next_name, next_iface]
-            next_port = 8770 # Should be fixed or get from iface
-
+            #next_port = 8770 # Should be fixed or get from iface
+            next_port = self.configurator.port[other_router]
+        
             # Add a new route request
-            route = "./bin/xroute -a AD,{},{},{}:{}".format(
-                    dest_ad, port, ipaddr, next_port)
+            route = "./bin/xroute -a AD,{},{},{}:{} --hostname={}".format(
+                    dest_ad, port, ipaddr, next_port, self.router)
             request.routes.route_cmds.append(route)
             dest_sid = self.configurator.config.sid[dest]
-            sid_route = "./bin/xroute -a SID,{},{},{}:{},{}".format(
-                    dest_sid, port, ipaddr, 8772, 7)
+            router_next_port = self.configurator.next_port[other_router]
+            sid_route = "./bin/xroute -a SID,{},{},{}:{},{} --hostname={}".format(
+                    dest_sid, port, ipaddr, router_next_port, 7, self.router)
             print("Sending %s" %sid_route)
             request.routes.route_cmds.append(sid_route)
         self.sendString(request.SerializeToString())
@@ -217,19 +219,24 @@ class ConfigRouter(Int32StringReceiver):
                 # Convert our_iface to corresponding outgoing port number
                 my_ifaces = self.configurator.config.router_ifaces[self.router]
                 port = my_ifaces.index(my_iface)
+                print("Port:" + str(port))
+                print("Router:" + str(self.router))
 
                 # Their IP addr (from configurator.iface_addrs
                 ipaddr = self.configurator.iface_addrs[other_router, other_iface]
-                next_port = 8770 # Should be fixed or get from iface
-
+                print("other_router" + str(other_router))
+                print("other_iface" + str(other_iface))
+                #next_port = 8770 # Should be fixed or get from iface
+                next_port = self.configurator.config.port[other_router]
                 # Add a new route request
-                route = "./bin/xroute -a AD,{},{},{}:{}".format(
-                        dest_ad, port, ipaddr, next_port)
+                route = "./bin/xroute -a AD,{},{},{}:{} --hostname={}".format(
+                        dest_ad, port, ipaddr, next_port, self.router)
                 request.routes.route_cmds.append(route)
                 print("Sending %s" %route)
                 dest_sid = self.configurator.config.sid[other_router]
-                sid_route = "./bin/xroute -a SID,{},{},{}:{},{}".format(
-                        dest_sid, port, ipaddr, 8772, 7)
+                router_next_port = self.configurator.config.next_port[other_router]
+                sid_route = "./bin/xroute -a SID,{},{},{}:{},{} --hostname={}".format(
+                        dest_sid, port, ipaddr, router_next_port, 7, self.router)
                 print("Sending %s" %sid_route)
                 request.routes.route_cmds.append(sid_route)
 
@@ -244,7 +251,7 @@ class ConfigRouter(Int32StringReceiver):
             link_info = self.configurator.config.link_info[self.router]
             for other_router in remove_links:
                 dest_sid = self.configurator.config.sid[other_router]
-                sid_route = "./bin/xroute -r SID,{}".format(dest_sid)
+                sid_route = "./bin/xroute -r SID,{} --hostname={}".format(dest_sid, self.router)
                 print("Sending %s" %sid_route)
                 request.routes.route_cmds.append(sid_route)
 

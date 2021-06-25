@@ -13,7 +13,9 @@ class XIAConfigReader:
         self.sid = {} # router : routing sid
         self.links = {}
         self.link_info = {}
- 
+        self.port = {}
+        self.next_port = {}
+         
         # Read in the config file
         parser = RawConfigParser()
         parser.read(config_filename)
@@ -37,6 +39,12 @@ class XIAConfigReader:
 
             # Routing SID
             self.sid[router] = genkeys.create_new_SID()
+           
+            # Port 
+            self.port[router] = parser.get(router, 'Port')
+
+            # NextPort
+            self.next_port[router] = parser.get(router, 'NextPort')
 
             # Check if this is a nameserver
             try:

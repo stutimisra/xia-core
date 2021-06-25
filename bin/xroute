@@ -57,6 +57,7 @@ class Options:
 		self._verbose = False
 		self._commandFile = None
 		self._dumpFile = None
+                self._hostName = None
 		self._add = []
 		self._remove = []
 		self._types = []
@@ -72,7 +73,7 @@ class Options:
 			opts, args = getopt.getopt(sys.argv[1:], shortopt,
 				["help", "print", "names", "verbose", "version",
 				"host=", "port=", "file=", "dump=", "add=", "remove=",
-				"type="])
+				"type=", "hostname="])
 		except getopt.GetoptError, err:
 			# print	 help information and exit:
 			print str(err) # will print something like "option -a not recognized"
@@ -83,33 +84,35 @@ class Options:
 
 			if o in ("-h", "--help"):
 				self.help()
-			elif o in ("-p", "--print"):
+                        elif o in ("-p", "--print"):
 				self._printTables = True
-			elif o in ("-n", "--names"):
+                        elif o in ("-n", "--names"):
 				self._printNames = True
 				self.__haveAction = True
-			elif o in ("-v", "--verbose"):
+                        elif o in ("-v", "--verbose"):
 				self._verbose = True
-			elif o in ("-f", "--file"):
+                        elif o in ("-f", "--file"):
 				self._commandFile = a
 				self.__haveAction = True
-			elif o in ("-d", "--dump"):
+                        elif o in ("-d", "--dump"):
 				self._dumpFile = a
 				self.__haveAction = True
-			elif o in ("-a", "--add"):
+                        elif o in ("-a", "--add"):
 				self._add.append(a)
 				self.__haveAction = True
 			elif o in ("-r", "--remove"):
 				self._remove.append(a)
 				self.__haveAction = True
+                        elif o in ("--hostname"):
+                                self._hostName = a
 			elif o in ("--host"):
 				self._host = a
 			elif o in ("--port"):
 				self._port = a
 			elif o in ("--type"):
 				self._types.append(a)
+                                self.__haveAction = False
 			elif o in ("--version"):
-				print "%s %s" % (APP, APP_VERSION)
 				sys.exit(0)
 			else:
 				assert False, "unhandled option"
@@ -164,6 +167,9 @@ where:
 	#
 	def printNames(self):
 		return self._printNames
+        
+        def hostName(self):
+                return self._hostName
 
 	def host(self):
 		return self._host
@@ -257,6 +263,7 @@ class RouterConfig:
 class XrouteApp:
 	connected = False
 	csock = None
+       # device = None
 	device = xiapyutils.getxiaclickhostname()
 	types = []
 
@@ -271,7 +278,10 @@ class XrouteApp:
 		self.options = Options()
 		self.options.getOptions()
 
-		# connect to click and parse the click configuration into our config object
+                if self.device is None:
+                    self.device = str(self.options.hostName())
+                
+                # connect to click and parse the click configuration into our config object
 		self.connectToClick()
 		self.config = RouterConfig(self.readData("flatconfig"))
 
@@ -656,6 +666,7 @@ class XrouteApp:
 # let's do this thing
 #
 def main():
+        print("I'm here")
 	xroute = XrouteApp()
 	xroute.run()
 
