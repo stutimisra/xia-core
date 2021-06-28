@@ -66,6 +66,7 @@ class Helper(Int32StringReceiver):
     def handleRoutesRequest(self, request):
         print "Got IP routes to configure"
         for route_cmd in request.routes.route_cmds:
+            route_cmd = route_cmd + " --hostname=" + router_name
             print route_cmd
             subprocess.check_call(route_cmd, shell=True)
         request.routes.result = True
@@ -149,7 +150,6 @@ class Helper(Int32StringReceiver):
         self.sendString(request.SerializeToString())
 
     def handleConfigRequest(self, request):
-        print("I'm handling config requests")
         if request.type == configrequest_pb2.Request.IFACE_INFO:
             self.handleInterfaceRequest(request)
         elif request.type == configrequest_pb2.Request.ROUTER_CONF:

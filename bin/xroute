@@ -263,14 +263,15 @@ class RouterConfig:
 class XrouteApp:
 	connected = False
 	csock = None
-       # device = None
-	device = xiapyutils.getxiaclickhostname()
+        device = None
+	# device = xiapyutils.getxiaclickhostname()
 	types = []
 
 	#
 	# the main logic of the xroute app
 	#
 	def run(self):
+                #print("device: " + self.device)
 		# load user defined XIDs
 		self.loadXids()
 
@@ -280,7 +281,7 @@ class XrouteApp:
 
                 if self.device is None:
                     self.device = str(self.options.hostName())
-                
+                print("device: " + self.device)
                 # connect to click and parse the click configuration into our config object
 		self.connectToClick()
 		self.config = RouterConfig(self.readData("flatconfig"))
