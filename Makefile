@@ -40,7 +40,7 @@ click/Makefile: click/Makefile.in xia.mk
 
 # treat click special since we want multi-proc compiles
 click: click/Makefile
-	make -j$(NPROCS) -C $@
+	make -j4 -C $@
 
 # rules for all of the other directories
 $(filter-out click, $(MAKEDIRS)):
